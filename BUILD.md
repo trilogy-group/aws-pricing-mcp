@@ -29,13 +29,6 @@ docker buildx create --name multiplatform-builder --driver docker-container --us
 docker buildx build --platform linux/amd64,linux/arm64 -t ai1st/aws-pricing-mcp:latest --push .
 ```
 
-If you want to build without pushing to a registry (for local testing):
-```bash
-docker buildx build --platform linux/amd64,linux/arm64 -t aws-pricing-mcp:latest --load .
-```
-
-Note: The `--load` flag only works with a single platform. For multi-platform builds without pushing, you'll need to build each platform separately.
-
 ### Publishing to Docker Hub
 
 To publish your image to Docker Hub:

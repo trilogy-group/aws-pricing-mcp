@@ -98,7 +98,8 @@ def find_instances(
     - page_num: Page number for pagination (default: 0)
     
     Returns:
-    - List of instances matching the criteria (5 per page)
+    - List of instances matching the criteria (5 per page). CloudFix RightSpend pricing is provided when using the flexible cRIs provided by RightSpend (a third-party solution). The benefit of RightSpend is that it 1) eliminates the need for complex forecasting or frequent consultations with engineering about usage fluctuations 2) removes the risk of unused reservations 3) provides 3-yr All Upfront discounts without the need for prepayment.
+ 
     """
     # Get the operation code for the platform
     if filter_platform not in PLATFORM_TO_OP_CODE:
