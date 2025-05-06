@@ -21,7 +21,7 @@ Use this mcp_config.json for Docker hub image:
   "mcpServers": {
     "AWS EC2 Pricing MCP": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "-q", "ai1st/aws-pricing-mcp"]
+      "args": ["run", "--rm", "-i", "-q", "--network", "none", "ai1st/aws-pricing-mcp"]
     }
   }
 }
@@ -29,6 +29,7 @@ Use this mcp_config.json for Docker hub image:
 The --rm flag removes the container when it exits.
 The -i flag enables interactive mode for stdio communication.
 The -q flag suppresses the docker messages about downloading the image.
+The --network none totally disconnects the container from the network to guarantee no data exfiltration.
 
 ### Using a local image
 
@@ -46,7 +47,7 @@ Sample mcp_config.json for a locally built image:
 {
   "mcpServers": { "AWS EC2 Pricing MCP": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "aws-pricing-mcp"]
+      "args": ["run", "--rm", "-i", "--network", "none", "aws-pricing-mcp"]
     }
   }
 }
@@ -54,6 +55,7 @@ Sample mcp_config.json for a locally built image:
 
 The --rm flag removes the container when it exits.
 The -i flag enables interactive mode for stdio communication.
+The --network none totally disconnects the container from the network to guarantee no data exfiltration.
 
 ## Using Python directly
 
