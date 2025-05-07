@@ -50,7 +50,7 @@ htmlcov/
 
 # Data
 *.csv
-*.json
+ec2_pricing.json
 
 # Jupyter Notebooks
 .ipynb_checkpoints
