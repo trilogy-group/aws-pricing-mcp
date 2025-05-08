@@ -19,6 +19,6 @@ docker login
 
 4. Push the multi-platform image to Docker Hub:
 ```bash
-docker buildx build --platform linux/amd64,linux/arm64 -t ai1st/aws-pricing-mcp:latest --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t ai1st/aws-pricing-mcp:latest --push . --build-arg BUILD_DATE=$(date +%Y-%m-%d)
 ```
 
