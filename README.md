@@ -36,10 +36,9 @@ Use this mcp_config.json for Docker hub image:
 Build the image:
 
 ```bash
-docker build -t aws-pricing-mcp .
+docker build -t aws-pricing-mcp . --build-arg BUILD_DATE=$(date +%Y-%m-%d)
 ```
-
-This will download the pricing data and build the image.
+This will download the pricing data and build the image. The BUILD_DATE parameter ensures the fresh pricing data is downloaded during build.
 
 Sample mcp_config.json for a locally built image:
 

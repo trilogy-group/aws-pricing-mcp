@@ -72,9 +72,12 @@ def find_instances(
     filter_min_cpu_ghz: float = 0,
     filter_min_network_performance: int = 0,
     filter_min_ebs_throughput: int = 0,
+    filter_max_price_per_hour: float = float('inf'),
     filter_family: str = "",
     filter_size: str = "",
     filter_processor: str = "",
+    sort_by: str = "Price",
+    sort_order: str = "Descending",
     page_num: int = 0
 ) -> List[Dict[str, Any]]:
     """
@@ -92,6 +95,9 @@ def find_instances(
     - min_cpu_ghz: Minimum CPU clock speed in GHz (default: 0)
     - min_network_performance: Minimum network performance in Mbps (default: 0)
     - min_ebs_throughput: Minimum dedicated EBS throughput in Mbps (default: 0)
+    - max_price_per_hour: Maximum price per hour in USD (default: no limit)
+    - sort_by: Field to sort by (one of: Price, Clock Speed GHz, vCPU cores, Memory GB, Ephemeral Storage GB, Network Performance Mbps, Dedicated EBS Throughput Mbps, GPU cores, GPU Memory GB; default: Price)
+    - sort_order: Sort order (one of: Ascending, Descending; default: Descending)
     - family: Filter by instance family (e.g., "m5", "c6g"; default: "" for all families)
     - size: Filter by instance size (e.g., "large", "2xlarge"; default: "" for all sizes)
     - processor: Filter by physical processor (e.g., "Graviton", "Xeon", "AMD"; default: "" for all processors)
@@ -206,8 +212,38 @@ def find_instances(
             
                     matching_instances.append(instance)
     
-    # Sort by price (cheapest first)
-    matching_instances.sort(key=lambda x: x["Effective Price per hour, USD"])
+    # Filter by max price if specified
+    if filter_max_price_per_hour != float('inf'):
+        matching_instances = [i for i in matching_instances if i["Effective Price per hour, USD"] <= filter_max_price_per_hour]
+
+    # Define sort key mapping
+    sort_key_map = {
+        "Price": "Effective Price per hour, USD",
+        "Clock Speed GHz": "Clock Speed, GHz",
+        "vCPU cores": "vCPU, cores",
+        "Memory GB": "Memory, GB",
+        "Ephemeral Storage GB": "Ephemeral Storage, GB",
+        "Network Performance Mbps": "Network Performance, Mbps",
+        "Dedicated EBS Throughput Mbps": "Dedicated EBS Throughput, Mbps",
+        "GPU cores": "GPU, cores",
+        "GPU Memory GB": "GPU Memory, GB"
+    }
+
+    # Sort by selected field
+    if sort_by not in sort_key_map:
+        raise ValueError(f"Invalid sort by: {sort_by}; valid sort by: {list(sort_key_map.keys())}")
+    sort_key = sort_key_map.get(sort_by, "Effective Price per hour, USD")
+    
+    # Two-pass sorting approach:
+    # 1. First sort by price (ascending) - this will be our secondary sort
+    matching_instances.sort(key=lambda x: x.get("Effective Price per hour, USD", 0))
+    
+    # 2. Then sort by the primary field with the specified direction
+    # Since Python's sort is stable, when primary fields are equal, the price order is preserved
+    matching_instances.sort(
+        key=lambda x: x.get(sort_key, 0),
+        reverse=(sort_order == "Descending")
+    )
     
     # Calculate pagination
     items_per_page = 5
