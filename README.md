@@ -1,5 +1,5 @@
 # AWS EC2 Pricing MCP Server
-[![Docker Pulls](https://img.shields.io/docker/pulls/ai1st/aws-pricing-mcp)](https://hub.docker.com/r/ai1st/aws-pricing-mcp)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ai1st/aws-pricing-mcp)](https://hub.docker.com/r/ai1st/aws-pricing-mcp) [![smithery badge](https://smithery.ai/badge/@trilogy-group/aws-pricing-mcp)](https://smithery.ai/server/@trilogy-group/aws-pricing-mcp)
 
 The **AWS EC2 Pricing MCP Server** lets any LLM or automation script query real-time EC2 pricing with one call. Powered by a pre-parsed AWS pricing catalogue, it answers questions such as
 
