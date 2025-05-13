@@ -72,6 +72,7 @@ def find_instances(
     filter_min_cpu_ghz: float = 0,
     filter_min_network_performance: int = 0,
     filter_min_ebs_throughput: int = 0,
+    filter_min_ephemeral_storage: int = 0,
     filter_max_price_per_hour: float = float('inf'),
     filter_family: str = "",
     filter_size: str = "",
@@ -95,6 +96,7 @@ def find_instances(
     - min_cpu_ghz: Minimum CPU clock speed in GHz (default: 0)
     - min_network_performance: Minimum network performance in Mbps (default: 0)
     - min_ebs_throughput: Minimum dedicated EBS throughput in Mbps (default: 0)
+    - min_ephemeral_storage: Minimum ephemeral storage in GB (default: 0)
     - max_price_per_hour: Maximum price per hour in USD (default: no limit)
     - sort_by: Field to sort by (one of: Price, Clock Speed GHz, vCPU cores, Memory GB, Ephemeral Storage GB, Network Performance Mbps, Dedicated EBS Throughput Mbps, GPU cores, GPU Memory GB; default: Price)
     - sort_order: Sort order (one of: Ascending, Descending; default: Descending)
@@ -158,7 +160,12 @@ def find_instances(
                 
             if size.get("Dedicated EBS Throughput, Mbps", 0) < filter_min_ebs_throughput:
                 continue
-            
+                
+            if size.get("Ephemeral Storage, GB", 0) < filter_min_ephemeral_storage:
+                continue
+        
+            if "operations" not in size:
+                raise ValueError(f"Instance {family_name}.{size_name} does not have operations")
             for op_code, regions in size["operations"].items():
                 if op_code != filter_op_code:
                     continue
@@ -255,4 +262,6 @@ def find_instances(
 
 # Run the server if executed directly
 if __name__ == "__main__":
+    # res = find_instances()
+    # print(res)
     mcp.run(transport="stdio")
