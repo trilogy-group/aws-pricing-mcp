@@ -60,7 +60,7 @@ mcp = FastMCP("AWS EC2 Pricing MCP", log_level="ERROR")
 
 # Define Tools
 @mcp.tool()
-def find_instances(
+def ec2_instances_pricing(
     filter_region: str = "us-east-1",
     filter_platform: str = "Linux/UNIX",
     filter_tenancy: str = "Shared",
