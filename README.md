@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/trilogy-group-aws-pricing-mcp-badge.png)](https://mseep.ai/app/trilogy-group-aws-pricing-mcp)
+
 # AWS EC2 Pricing MCP Server
 [![Docker Pulls](https://img.shields.io/docker/pulls/ai1st/aws-pricing-mcp)](https://hub.docker.com/r/ai1st/aws-pricing-mcp) [![smithery badge](https://smithery.ai/badge/@trilogy-group/aws-pricing-mcp)](https://smithery.ai/server/@trilogy-group/aws-pricing-mcp)
 
