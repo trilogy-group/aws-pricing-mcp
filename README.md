@@ -16,7 +16,7 @@ sam deploy --guided
 # Get the Function URL
 aws cloudformation describe-stacks \
   --stack-name aws-pricing-mcp \
-  --query 'Stacks[0].Outputs[?OutputKey==`InvokeUrl`].OutputValue' \
+  --query 'Stacks[0].Outputs[?OutputKey==`FunctionUrl`].OutputValue' \
   --output text
 ```
 
