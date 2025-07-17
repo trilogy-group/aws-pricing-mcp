@@ -54,3 +54,6 @@ ec2_pricing.json
 
 # Jupyter Notebooks
 .ipynb_checkpoints
+
+.aws-sam
+samconfig.toml

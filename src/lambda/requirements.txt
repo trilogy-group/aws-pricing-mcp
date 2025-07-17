@@ -1,0 +1,7 @@
+# AWS Pricing MCP Lambda Handler Requirements
+# No external dependencies required - uses only Python standard library
+
+# If you need to add any external dependencies in the future, add them here
+# Example:
+# requests==2.31.0
+# boto3==1.34.0 
