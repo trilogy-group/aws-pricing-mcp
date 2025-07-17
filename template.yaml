@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Pricing MCP Lambda Function with Function URL
+
+Parameters:
+  FunctionName:
+    Type: String
+    Default: aws-pricing-mcp
+    Description: Name of the Lambda function
+  
+  Runtime:
+    Type: String
+    Default: python3.12
+    AllowedValues:
+      - python3.9
+      - python3.10
+      - python3.11
+      - python3.12
+    Description: Python runtime version
+  
+  Architecture:
+    Type: String
+    Default: x86_64
+    AllowedValues:
+      - x86_64
+      - arm64
+    Description: Lambda function architecture (x86_64 or arm64)
+  
+  Timeout:
+    Type: Number
+    Default: 30
+    Description: Lambda function timeout in seconds
+  
+  MemorySize:
+    Type: Number
+    Default: 512
+    Description: Lambda function memory size in MB (increased for pricing data processing)
+
+Globals:
+  Function:
+    Timeout: !Ref Timeout
+    MemorySize: !Ref MemorySize
+    Environment:
+      Variables:
+        PYTHONPATH: /var/task
+
+Resources:
+  PricingMCPFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Ref FunctionName
+      CodeUri: src/lambda/
+      Handler: lambda_handler.lambda_handler
+      Runtime: !Ref Runtime
+      Description: AWS Pricing MCP Lambda Function - Provides EC2 pricing data through MCP protocol
+      Architectures:
+        - !Ref Architecture
+      Environment:
+        Variables:
+          PYTHONPATH: /var/task
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - '*'
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - '*'
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+
+Outputs:
+  FunctionName:
+    Description: Name of the Lambda function
+    Value: !Ref PricingMCPFunction
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionName"
+  
+  FunctionArn:
+    Description: ARN of the Lambda function
+    Value: !GetAtt PricingMCPFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionArn"
+  
+  FunctionUrl:
+    Description: Function URL for direct HTTP access
+    Value: !GetAtt PricingMCPFunctionUrl.FunctionUrl
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionUrl"
+  
