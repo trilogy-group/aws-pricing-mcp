@@ -7,6 +7,11 @@ Parameters:
     Type: String
     Default: aws-pricing-mcp
     Description: Name of the Lambda function
+
+  FullfillmentFunctionName:
+    Type: String
+    Default: aws-pricing-mcp-fullfillment
+    Description: Name of the Marketplace Fullfillment Function
   
   Runtime:
     Type: String
@@ -71,6 +76,77 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
 
+  FullfillmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Ref FullfillmentFunctionName
+      CodeUri: src/fullfillment/
+      Handler: lambda_handler.lambda_handler
+      Runtime: !Ref Runtime
+      Description: AWS Marketplace Fullfillment Function
+      Architectures:
+        - !Ref Architecture
+      Environment:
+        Variables:
+          PYTHONPATH: /var/task
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - '*'
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - '*'
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action: sts:AssumeRole
+              Resource: "*"
+  NoCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Ref AWS::StackName
+        DefaultTTL: 0
+        MaxTTL: 300
+        MinTTL: 0
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: all
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          HeadersConfig:
+            HeaderBehavior: whitelist
+            Headers:
+              - User-Agent
+          QueryStringsConfig:
+            QueryStringBehavior: all
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub "${AWS::StackName}-CloudfrontDistribution"
+        PriceClass: PriceClass_100
+        IPV6Enabled: true
+        HttpVersion: http2 
+        Origins:
+          - Id: MyOrigin
+            DomainName: !Select [2, !Split ["/", !GetAtt FullfillmentFunctionUrl.FunctionUrl]]
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols: 
+                - TLSv1.2
+        Enabled: true
+        DefaultCacheBehavior:
+          AllowedMethods: [HEAD, DELETE, POST, GET, OPTIONS, PUT, PATCH]
+          Compress: true
+          TargetOriginId: MyOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: !Ref NoCachePolicy   
 
 Outputs:
   FunctionName:
@@ -91,3 +167,8 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}-FunctionUrl"
   
+  FullfillmentFunctionUrl:
+    Description: Function URL for direct HTTP access
+    Value: !GetAtt FullfillmentFunctionUrl.FunctionUrl
+    Export:
+      Name: !Sub "${AWS::StackName}-FullfillmentFunctionUrl"
